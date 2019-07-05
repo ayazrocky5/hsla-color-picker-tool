@@ -1,0 +1,1554 @@
+<html>
+<head>
+
+<style>
+
+
+	.cp-picker {
+  --cp-width: 300px;
+  --cp-spacing: 6px;
+  --cp-font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --cp-text-color: #000;
+  --cp-background-color: #fff;
+  --cp-focus-color: dodgerblue;
+  --cp-box-shadow-focus: 0 0 0 2px var(--cp-focus-color);
+
+  --cp-color: hsl(
+    var(--hsl-h),
+    var(--hsl-s),
+    var(--hsl-l),
+    var(--hsl-a)
+  );
+
+  display: block;
+  width: var(--cp-width);
+  font-size: 12px;
+  font-family: var(--cp-font-family);
+  color: var(--cp-text-color);
+  background-color: var(--cp-background-color);
+}
+
+.cp-picker *,
+.cp-picker *::before,
+.cp-picker *::after {
+  box-sizing: border-box;
+}
+
+.cp-picker input {
+  font: inherit;
+}
+
+.cp-picker button {
+  font: inherit;
+}
+
+.cp-picker button:hover {
+  outline: none;
+  background-color: #ddd;
+}
+
+.cp-picker button::-moz-focus-inner {
+  padding: 0;
+  border-style: none;
+}
+
+.cp-color-space {
+  position: relative;
+  overflow: hidden;
+  height: calc( var(--cp-width) * 0.6 );
+  background-color: hsl(var(--hsl-h), 100%, 50%);
+  background-image:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, hsla(0, 0%, 100%, 0));
+}
+
+.cp-color-space__marker {
+  --cp-marker-size: calc( var(--cp-spacing) * 4 );
+
+  box-sizing: border-box;
+  position: absolute;
+  bottom: var(--hsv-v);
+  left: var(--hsv-s);
+  width: var(--cp-marker-size);
+  height: var(--cp-marker-size);
+  margin-left: calc( -1 * var(--cp-marker-size) / 2 );
+  margin-bottom: calc( -1 * var(--cp-marker-size) / 2 );
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px #000;
+  border-radius: 50%;
+}
+
+.cp-color-space__marker:focus {
+  outline: none;
+  box-shadow: var(--cp-box-shadow-focus);
+}
+
+
+
+.cp-preview-row,
+.cp-color-format-row {
+  padding: var(--cp-spacing);
+}
+
+
+
+.cp-slider-group > *:not(:first-child) {
+  margin-top: calc( var(--cp-spacing) * 2 );
+}
+
+.cp-slider {
+  --slider-track-width: 100%;
+  --slider-track-height: calc( var(--cp-spacing) * 3 );
+  --slider-thumb-size: calc( var(--cp-spacing) * 4 );
+
+  display: block;
+}
+
+.cp-slider__input,
+.cp-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+.cp-slider__input {
+  display: block;
+  width: var(--slider-track-width);
+  height: var(--slider-track-height);
+  margin: 0;
+  background: none;
+}
+
+.cp-slider__input:focus {
+  outline: none;
+}
+
+.cp-slider__input:focus::-moz-range-track {
+  outline: 2px solid var(--cp-focus-color);
+}
+
+.cp-slider__input:focus::-webkit-slider-runnable-track {
+  outline: 2px solid var(--cp-focus-color);
+}
+
+.cp-slider__input:focus::-ms-track {
+  outline: 2px solid var(--cp-focus-color);
+}
+
+/* Firefox, why?! */
+.cp-slider__input::-moz-focus-outer {
+  border: none;
+}
+
+/* Range input: Tracks */
+.cp-slider__input::-moz-range-track {
+  display: block;
+  box-sizing: border-box;
+  height: var(--slider-track-height);
+}
+
+.cp-slider__input--hue::-moz-range-track {
+  background-image: linear-gradient(
+    to right,
+    #f00 0,      /*   0° */
+    #ff0 16.67%, /*  60° */
+    #0f0 33.33%, /* 120° */
+    #0ff 50.00%, /* 180° */
+    #00f 66.67%, /* 240° */
+    #f0f 83.33%, /* 300° */
+    #f00         /* 360° */
+  );
+}
+
+.cp-slider__input--alpha::-moz-range-track {
+  background-image: linear-gradient(to right, transparent, var(--cp-color));
+}
+
+.cp-slider__input::-webkit-slider-runnable-track {
+  width: var(--slider-track-width);
+  height: var(--slider-track-height);
+  border: none;
+}
+
+.cp-slider__input--hue::-webkit-slider-runnable-track {
+  background-image: linear-gradient(
+    to right,
+    #f00 0,      /*   0° */
+    #ff0 16.67%, /*  60° */
+    #0f0 33.33%, /* 120° */
+    #0ff 50.00%, /* 180° */
+    #00f 66.67%, /* 240° */
+    #f0f 83.33%, /* 300° */
+    #f00         /* 360° */
+  );
+}
+
+.cp-slider__input--alpha::-webkit-slider-runnable-track {
+  background-image: linear-gradient(to right, transparent, var(--cp-color));
+}
+
+.cp-slider__input::-ms-track {
+  width: var(--slider-track-width);
+  height: var(--slider-track-height);
+  border: none;
+}
+
+.cp-slider__input--hue::-ms-track {
+  background-image: linear-gradient(
+    to right,
+    #f00 0,      /*   0° */
+    #ff0 16.67%, /*  60° */
+    #0f0 33.33%, /* 120° */
+    #0ff 50.00%, /* 180° */
+    #00f 66.67%, /* 240° */
+    #f0f 83.33%, /* 300° */
+    #f00         /* 360° */
+  );
+}
+
+.cp-slider__input--alpha::-ms-track {
+  background-image: linear-gradient(to right, transparent, var(--cp-color));
+}
+
+/* Range input: Thumbs */
+.cp-slider__input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: 0 0 0 1px #000;
+  transform: rotate(0);
+}
+
+.cp-slider__input::-webkit-slider-thumb {
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
+  margin-top: calc((var(--slider-track-height) - var(--slider-thumb-size)) / 2);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: 0 0 0 1px #000;
+  transform: rotate(0);
+}
+
+.cp-slider__input::-ms-thumb {
+  width: var(--slider-thumb-size);
+  height: var(--slider-thumb-size);
+  margin-top: 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: 0 0 0 1px #000;
+  transform: rotate(0);
+}
+
+
+
+.cp-text-field {
+  display: block;
+}
+
+.cp-text-field__label {
+  display: block;
+  text-align: center;
+}
+
+.cp-text-field__input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.5em 0.25em;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-family: 'Fira Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+
+
+.cp-color-preview {
+  position: relative;
+  display: block;
+  width: calc( var(--cp-spacing) * 6 );
+  height: calc( var(--cp-spacing) * 6 );
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.cp-color-preview::before {
+  content: '';
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--cp-color);
+}
+
+.cp-copy-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc( var(--cp-spacing) * 6 );
+  height: calc( var(--cp-spacing) * 6 );
+  border: none;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.cp-copy-button:focus {
+  outline: none;
+  box-shadow: var(--cp-box-shadow-focus);
+}
+
+.cp-clipboard-icon {
+  transform: rotate(0);
+}
+
+
+
+.cp-format-switcher-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cp-spacing);
+  border: none;
+  background-color: #fff;
+}
+
+.cp-switcher-arrow-icon {
+  transform: rotate(0);
+}
+
+[data-cp-format-group='hsl'],
+[data-cp-format-group='hsv'],
+[data-cp-format-group='hwb'],
+[data-cp-format-group='rgb'],
+[data-cp-format-group='hex'] {
+  display: none;
+}
+
+.cp-picker[data-cp-active-format='hsl'] [data-cp-format-group='hsl'],
+.cp-picker[data-cp-active-format='hsv'] [data-cp-format-group='hsv'],
+.cp-picker[data-cp-active-format='hwb'] [data-cp-format-group='hwb'],
+.cp-picker[data-cp-active-format='rgb'] [data-cp-format-group='rgb'],
+.cp-picker[data-cp-active-format='hex'] [data-cp-format-group='hex'] {
+  display: block;
+}
+
+/*
+Utility: Tiled background
+*/
+.cp-tiled-background {
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee),
+    linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
+  background-size: calc( var(--cp-spacing) * 2 ) calc( var(--cp-spacing) * 2 );
+  background-position: 0 0, var(--cp-spacing) var(--cp-spacing);
+}
+
+
+/*
+Utility: Columns
+*/
+.cp-columns {
+  display: flex;
+  align-items: center;
+}
+
+.cp-columns--center {
+  justify-content: center;
+}
+
+.cp-column:not(:first-child) {
+  margin-left: var(--cp-spacing);
+}
+
+.cp-column--grow {
+  flex-grow: 1;
+}
+
+/*
+Utility: Visibility hidden
+
+Source: https://github.com/h5bp/html5-boilerplate
+
+Hide only visually, but have it available for screen readers:
+https://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+
+1. For long content, line feeds are not interpreted as spaces
+   and small width causes content to wrap 1 word per line:
+   https://medium.com/@jessebeach/beware-smushed-off-screen-accessible-text-5952a4c2cbfe
+*/
+.cp-visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap; /* 1. */
+}
+
+/*
+Basic styles for everything else
+*/
+html {
+  font-size: 1em;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  line-height: 1.5;
+}
+
+body {
+  max-width: 600px;
+  margin: 0;
+  padding: 0 50px;
+  background-color: #ddd;
+}
+
+:focus {
+  outline: 2px solid dodgerblue;
+}</style>
+
+</head>
+<body>
+
+
+<h1>Prototyping accessible color picker</h1>
+
+<color-picker class="cp-picker">
+  <div class="cp-color-space" data-cp-color-space>
+    <div class="cp-color-space__marker" data-cp-marker tabindex="0" aria-label="Marker"></div>
+  </div>
+
+  <div class="cp-columns cp-preview-row">
+    <div class="cp-slider-group cp-column cp-column--grow">
+      <label class="cp-slider" for="hue-slider">
+        <span class="cp-slider__label cp-visually-hidden">
+          Hue
+        </span>
+
+        <input class="cp-slider__input cp-slider__input--hue" id="hue-slider" data-cp-input-hsl="h" type="range">
+      </label>
+
+      <label class="cp-slider" for="alpha-slider">
+        <span class="cp-slider__label cp-visually-hidden">
+          Alpha
+        </span>
+
+        <input class="cp-slider__input cp-slider__input--alpha cp-tiled-background" id="alpha-slider" data-cp-input-hsl="a" type="range">
+      </label>
+    </div>
+
+    <div class="cp-color-preview cp-column cp-tiled-background" aria-hidden="true"></div>
+    
+    <div class="cp-column">
+      <button class="cp-copy-button" data-cp-copy-button>
+        <span class="cp-visually-hidden">Copy</span>
+
+        <svg class="cp-clipboard-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+          <path d="M5 0v2H1v13h12v-3h-1v2H2V5h10v3h1V2H9V0zm1 1h2v2h3v1H3V3h3z"/>
+          <path d="M10 7v2h5v2h-5v2l-3-3zM3 6h5v1H3zm0 2h3v1H3zm0 2h3v1H3zm0 2h5v1H3z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="cp-color-format-row cp-columns">
+    <div class="cp-column cp-column--grow">
+      <div data-cp-format-group="hsl">
+        <div class="cp-columns cp-columns--center">
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsl-h">
+              <span class="cp-text-field__label">H</span>
+              <input class="cp-text-field__input" id="color-hsl-h" data-cp-input-hsl="h" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsl-s">
+              <span class="cp-text-field__label">S</span>
+              <input class="cp-text-field__input" id="color-hsl-s" data-cp-input-hsl="s" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsl-l">
+              <span class="cp-text-field__label">L</span>
+              <input class="cp-text-field__input" id="color-hsl-l" data-cp-input-hsl="l" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsl-a">
+              <span class="cp-text-field__label">A</span>
+              <input class="cp-text-field__input" id="color-hsl-a" data-cp-input-hsl="a" type="text">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div data-cp-format-group="hsv">
+        <div class="cp-columns cp-columns--center">
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsv-h">
+              <span class="cp-text-field__label">H</span>
+              <input class="cp-text-field__input" id="color-hsv-h" data-cp-input-hsv="h" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsv-s">
+              <span class="cp-text-field__label">S</span>
+              <input class="cp-text-field__input" id="color-hsv-s" data-cp-input-hsv="s" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsv-v">
+              <span class="cp-text-field__label">V</span>
+              <input class="cp-text-field__input" id="color-hsv-v" data-cp-input-hsv="v" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hsv-a">
+              <span class="cp-text-field__label">A</span>
+              <input class="cp-text-field__input" id="color-hsv-a" data-cp-input-hsv="a" type="text">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div data-cp-format-group="hwb">
+        <div class="cp-columns cp-columns--center">
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hwb-h">
+              <span class="cp-text-field__label">H</span>
+              <input class="cp-text-field__input" id="color-hwb-h" data-cp-input-hwb="h" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hwb-w">
+              <span class="cp-text-field__label">W</span>
+              <input class="cp-text-field__input" id="color-hwb-w" data-cp-input-hwb="w" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hwb-b">
+              <span class="cp-text-field__label">B</span>
+              <input class="cp-text-field__input" id="color-hwb-b" data-cp-input-hwb="b" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hwb-a">
+              <span class="cp-text-field__label">A</span>
+              <input class="cp-text-field__input" id="color-hwb-a" data-cp-input-hwb="a" type="text">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div data-cp-format-group="rgb">
+        <div class="cp-columns cp-columns--center">
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-rgb-r">
+              <span class="cp-text-field__label">R</span>
+              <input class="cp-text-field__input" id="color-rgb-r" data-cp-input-rgb="r" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-rgb-g">
+              <span class="cp-text-field__label">G</span>
+              <input class="cp-text-field__input" id="color-rgb-g" data-cp-input-rgb="g" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-rgb-b">
+              <span class="cp-text-field__label">B</span>
+              <input class="cp-text-field__input" id="color-rgb-b" data-cp-input-rgb="b" type="text">
+            </label>
+          </div>
+
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-rgb-a">
+              <span class="cp-text-field__label">A</span>
+              <input class="cp-text-field__input" id="color-rgb-a" data-cp-input-rgb="a" type="text">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div data-cp-format-group="hex">
+        <div class="cp-columns cp-columns--center">
+          <div class="cp-column cp-column--grow">
+            <label class="cp-text-field" for="color-hex">
+              <span class="cp-text-field__label">Hexadecimal</span>
+              <input class="cp-text-field__input" id="color-hex" data-cp-input-hex type="text">
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cp-column">
+      <button class="cp-format-switcher-button" data-cp-format-switcher-button type="button">
+        <span class="cp-visually-hidden">
+          Switch color format
+        </span>
+
+        <svg class="cp-switcher-arrow-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15">
+          <path d="M8 15l5-5-1-1-4 2-4-2-1 1zm4-9l1-1-5-5-5 5 1 1 4-2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</color-picker>
+
+
+
+<script>
+
+
+		document.addEventListener('DOMContentLoaded', function () {
+  enhanceRangeInputs();
+});
+
+class ColorPicker extends HTMLElement {
+  connectedCallback() {
+    this.availableFormats = ['hsl', 'hsv', 'hwb', 'rgb', 'hex'];
+    // The active color format affects:
+    // - Which color is copied when activating the copy button
+    this.activeFormat = 'hsl';
+    this.setAttribute('data-cp-active-format', this.activeFormat);
+
+    this.colors = {
+      hsl: {
+        h: 270,
+        s: 0.8,
+        l: 0.5,
+        a: 1
+      },
+      hsv: {},
+      hwb: {},
+      rgb: {}
+    };
+
+    this.conversionFunctions = {
+      hsl: {
+        hsv: convertHslToHsv,
+        hwb: convertHslToHwb,
+        rgb: convertHslToRgb
+      },
+      hsv: {
+        hsl: convertHsvToHsl,
+        hwb: convertHsvToHwb,
+        rgb: convertHsvToRgb
+      },
+      hwb: {
+        hsl: convertHwbToHsl,
+        hsv: convertHwbToHsv,
+        rgb: convertHwbToRgb,
+      },
+      rgb: {
+        hsl: convertRgbToHsl,
+        hwb: convertRgbToHwb,
+        hsv: convertRgbToHsv
+      }
+    };
+
+
+
+    this.colorProps = new Map();
+    this.colorProps
+      .set('hsl', {
+        colorModel: 'hsl',
+        convertToCssColor: convertHslToCssColor,
+        inputs: {
+          h: {
+            min: 0,
+            max: 360,
+            convertToCssValue: roundToPrecision,
+            convertToNumber: convertHueAngleToNumber
+          },
+          s: {
+            min: 0,
+            max: 100,
+            convertToCssValue: convertNumberToPercent,
+            convertToNumber: convertPercentToNumber
+          },
+          l: {
+            min: 0,
+            max: 100,
+            convertToCssValue: convertNumberToPercent,
+            convertToNumber: convertPercentToNumber
+          },
+          a: {
+            min: 0,
+            max: 1,
+            step: 0.01,
+            convertToCssValue: roundToPrecision,
+            convertToNumber: convertAlphaToNumber
+          }
+        }
+      })
+      .set('hsv', {
+        colorModel: 'hsv',
+        convertToCssColor: convertHsvToCssColor,
+        inputs: {
+          h: {
+            min: 0,
+            max: 360,
+            convertToCssValue: roundToPrecision,
+            convertToNumber: convertHueAngleToNumber
+          },
+          s: {
+            min: 0,
+            max: 100,
+            convertToCssValue: convertNumberToPercent,
+            convertToNumber: convertPercentToNumber
+          },
+          v: {
+            min: 0,
+            max: 100,
+            convertToCssValue: convertNumberToPercent,
+            convertToNumber: convertPercentToNumber
+          },
+          a: {
+            min: 0,
+            max: 1,
+            step: 0.01,
+            convertToCssValue: roundToPrecision,
+            convertToNumber: convertAlphaToNumber
+          }
+        }
+      })
+      .set('hwb', {
+        colorModel: 'hwb',
+        convertToCssColor: convertHwbToCssColor,
+        inputs: {
+          h: {
+            min: 0,
+            max: 360,
+            convertToCssValue: roundToPrecision,
+            convertToNumber: convertHueAngleToNumber
+          },
+          w: {
+            min: 0,
+            max: 100,
+            convertToCssValue: convertNumberToPercent,
+            convertToNumber: convertPercentToNumber
+          },
+          b: {
+            min: 0,
+            max: 100,
+            convertToCssValue: convertNumberToPercent,
+            convertToNumber: convertPercentToNumber
+          },
+          a: {
+            min: 0,
+            max: 1,
+            step: 0.01,
+            convertToCssValue: roundToPrecision,
+            convertToNumber: convertAlphaToNumber
+          }
+        }
+      })
+      .set('rgb', {
+        colorModel: 'rgb',
+        convertToCssColor: convertRgbToCssColor,
+        inputs: {
+          r: {
+            min: 0,
+            max: 255,
+            convertToCssValue: convertNumberTo8Bit,
+            convertToNumber: convert8BitToNumber
+          },
+          g: {
+            min: 0,
+            max: 255,
+            convertToCssValue: convertNumberTo8Bit,
+            convertToNumber: convert8BitToNumber
+          },
+          b: {
+            min: 0,
+            max: 255,
+            convertToCssValue: convertNumberTo8Bit,
+            convertToNumber: convert8BitToNumber
+          },
+          a: {
+            min: 0,
+            max: 1,
+            step: 0.01,
+            convertToCssValue: roundToPrecision,
+            convertToNumber: convertAlphaToNumber
+          }
+        }
+      })
+      .set('hex', {
+        colorModel: 'rgb',
+        convertToCssColor: convertHexToCssColor,
+        inputs: {
+          hex: {
+            convertToCssValue: convertRgbToHex,
+            convertToNumber: convertHexToRgb
+          }
+        }
+      });
+
+    this.initColorInputs();
+    this.initMarkerKeyboardNav();
+    this.initMarkerMouseNav();
+    this.initCopyButton();
+    this.initFormatSwitcherButton();
+    this.updateColors('hsl');
+  }
+
+  initColorInputs() {
+    for (const colorProp of this.colorProps.values()) {
+      for (const [channel, input] of Object.entries(colorProp.inputs)) {
+        if (input.references === undefined) {
+          input.references = [];
+        }
+
+        // Store references to all used color inputs
+        const selector = `[data-cp-input-${colorProp.colorModel}="${channel}"]`;
+        const inputRefs = this.querySelectorAll(selector);
+        inputRefs.forEach(ref => {
+          input.references.push(ref);
+        })
+
+        for (const inputNode of input.references) {
+          const eventType = inputNode.type === 'range' ? 'input' : 'change';
+          inputNode.addEventListener(eventType, this.emitColorChange.bind(this));
+
+          if (colorProp.colorModel) {
+            inputNode.setAttribute('data-cp-color-model', colorProp.colorModel);
+          }
+
+          inputNode.setAttribute('data-cp-color-channel', channel);
+
+          if (inputNode.type === 'range' || inputNode.type === 'number') {
+            setNumberInputAttributes(inputNode, input);
+          }
+        }
+      }
+    }
+  }
+
+  emitColorChange(event) {
+    const inputNode = event.currentTarget;
+    const colorModel = inputNode.getAttribute('data-cp-color-model');
+    const channelName = inputNode.getAttribute('data-cp-color-channel');
+    const colorProp = this.colorProps.get(colorModel);
+    const input = colorProp.inputs[channelName];
+
+    let value = inputNode.value;
+    if (input.convertToNumber) {
+      value = input.convertToNumber(inputNode.value);
+    }
+
+    if (isNaN(value)) {
+      return;
+    }
+
+    this.colors[colorModel][channelName] = value;
+    this.updateColors(colorModel);
+  }
+
+  updateColors(sourceColorModel) {
+    this.cascadeColorChanges(sourceColorModel);
+
+    for (const colorProp of this.colorProps.values()) {
+      const color = this.colors[colorProp.colorModel];
+
+      for (const [channel, input] of Object.entries(colorProp.inputs)) {
+        let customProp = `--${colorProp.colorModel}-${channel}`;
+        let value = color[channel];
+
+        // this I do not like do better
+        if (value === undefined) {
+          value = color;
+        }
+
+        if (input.convertToCssValue !== undefined) {
+          value = input.convertToCssValue(value);
+        }
+
+        for (const inputNode of input.references) {
+          inputNode.value = value;
+        }
+
+        this.style.setProperty(customProp, value);
+      }
+    }
+  }
+
+  cascadeColorChanges(sourceColorModel) {
+    const sourceColor = this.colors[sourceColorModel];
+    const conversionFunctions = this.conversionFunctions[sourceColorModel];
+    const targetColorModels = Object.keys(this.colors)
+      .filter(colorModel => colorModel !== sourceColorModel);
+
+    for (const colorModel of targetColorModels) {
+      const color = conversionFunctions[colorModel](sourceColor);
+      this.colors[colorModel] = color;
+    }
+  }
+
+  initMarkerKeyboardNav() {
+    const marker = this.querySelector('[data-cp-marker]');
+
+    if (marker !== null) {
+      marker.addEventListener('keydown', this.moveMarkerWithArrows.bind(this));
+    }
+  }
+
+  moveMarkerWithArrows(event) {
+    if (
+      ![37, 38, 39, 40].includes(event.keyCode)
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const direction = [37, 40].includes(event.keyCode) ? -1 : 1;
+    const channel = [37, 39].includes(event.keyCode) ? 's' : 'v';
+    const step = event.shiftKey ? 10 : 1;
+    const newValue = this.colors.hsv[channel] + direction * step * 0.01;
+
+    this.colors.hsv[channel] = clamp(newValue, 0, 1);
+    this.updateColors('hsv');
+  }
+
+  initMarkerMouseNav() {
+    this.colorSpace = this.querySelector('[data-cp-color-space]');
+
+    if (this.colorSpace === null) {
+      return;
+    }
+
+    this.mouseOriginatedInColorSpace = false;
+
+    this.colorSpace.addEventListener('mousedown', () => {
+      this.mouseOriginatedInColorSpace = true;
+    });
+
+    document.addEventListener('mouseup', () => {
+      this.mouseOriginatedInColorSpace = false;
+    });
+
+    document.addEventListener('mousemove', this.moveMarkerWithMouse.bind(this));
+    document.addEventListener('touchmove', this.moveMarkerWithTouch.bind(this));
+  }
+
+  /**
+   * @param {MouseEvent} event
+   */
+  moveMarkerWithMouse(event) {
+    if (event.buttons !== 1 || this.mouseOriginatedInColorSpace === false) {
+      return;
+    }
+
+    this.moveMarker(event.clientX, event.clientY);
+  }
+
+  /**
+   * @param {TouchEvent} event
+   */
+  moveMarkerWithTouch(event) {
+    if (this.mouseOriginatedInColorSpace === false) {
+      return;
+    }
+
+    this.moveMarker(event.touches[0].clientX, event.touches[0].clientY);
+  }
+
+  moveMarker(clientX, clientY) {
+    const rect = this.colorSpace.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const newHsvS = clamp(x / rect.width, 0, 1);
+    const newHsvV = clamp(1 - y / rect.height, 0, 1);
+
+    this.colors.hsv.s = newHsvS;
+    this.colors.hsv.v = newHsvV;
+
+    this.updateColors('hsv');
+  }
+
+  initCopyButton() {
+    const copyButton = this.querySelector('[data-cp-copy-button]');
+
+    if (copyButton !== null) {
+      copyButton.addEventListener('click', this.copyColor.bind(this));
+    }
+  }
+
+  copyColor() {
+    const colorProp = this.colorProps.get(this.activeFormat);
+    const color = this.colors[colorProp.colorModel];
+    const colorString = colorProp.convertToCssColor(colorProp, color);
+    copyToClipboard(colorString);
+  }
+
+  initFormatSwitcherButton() {
+    const formatSwitcherButton = this.querySelector('[data-cp-format-switcher-button]');
+
+    if (formatSwitcherButton !== null) {
+      formatSwitcherButton.addEventListener('click', this.switchFormat.bind(this));
+    }
+  }
+
+  switchFormat() {
+    const activePos = this.availableFormats.indexOf(this.activeFormat);
+    const isLastPos = activePos === this.availableFormats.length - 1;
+    const newPos = isLastPos ? 0 : activePos + 1;
+    this.activeFormat = this.availableFormats[newPos];
+    this.setAttribute('data-cp-active-format', this.activeFormat);
+  }
+};
+
+window.customElements.define('color-picker', ColorPicker);
+
+/**
+ * @param {Element} inputNode
+ * @param {object} input
+ */
+function setNumberInputAttributes(inputNode, input) {
+  if (input.min !== undefined) {
+    inputNode.setAttribute('min', input.min);
+  }
+
+  if (input.max !== undefined) {
+    inputNode.setAttribute('max', input.max);
+  }
+
+  if (input.step !== undefined) {
+    inputNode.setAttribute('step', input.step);
+  }
+}
+
+/**
+ * https://stackoverflow.com/a/33928558/2036825
+ *
+ * @param {string} text
+ */
+function copyToClipboard(text) {
+  if (!(document.queryCommandSupported && document.queryCommandSupported('copy'))) {
+    return;
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.textContent = text;
+
+  // Prevent scrolling to bottom of page in MS Edge.
+  textarea.style.position = 'fixed';
+
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  try {
+    // Security exception may be thrown by some browsers.
+    return document.execCommand('copy');
+  } catch (error) {
+    console.warn('Copying to the clipboard failed.', error);
+    return false;
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
+function enhanceRangeInputs() {
+  const inputs = document.querySelectorAll('input[type="range"]');
+  inputs.forEach(input => {
+    input.addEventListener('keydown', changeInputValue);
+  });
+}
+
+/**
+ * This event listener adds the ability to navigate
+ * a range input in larger steps by holding down Shift
+ * while pressing the arrow keys.
+ *
+ * @param {KeyboardEvent} event
+ */
+function changeInputValue(event) {
+  if (
+    ![37, 38, 39, 40].includes(event.keyCode) ||
+    !event.shiftKey
+  ) {
+    return;
+  }
+
+  const input = event.currentTarget;
+  const step = input.step !== '' ? parseFloat(input.step) : 1;
+  const stepFactor = 10;
+  const direction = [37, 40].includes(event.keyCode) ? -1 : 1;
+  const wideStep = step * stepFactor;
+  const value = parseFloat(input.value);
+
+  // Remove one step because the default action needs to be able to set a new value for it to fire events, too.
+  input.value = clamp(value + direction * wideStep, input.min, input.max) - direction * step;
+}
+
+/**
+ * Clamps the given value between the min and max boundaries.
+ *
+ * @param {number} value
+ * @param {number} min
+ * @param {number} max
+ * @returns {number} - `value` if `min <= value <= max`
+ *                   - `min` if `value < min`
+ *                   - `max` if `value > max`
+ */
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(value, max));
+}
+
+/**
+ * @param {number} value
+ * @returns {number}
+ */
+function roundToPrecision(value, decimalPrecision = 3) {
+  const p = Math.pow(10, decimalPrecision - 1);
+  return Math.round(value * p) / p;
+}
+
+/**
+ * @param {number} value
+ * @returns {string}
+ */
+function convertNumberToPercent(value) {
+  return `${roundToPrecision(value * 100)}%`;
+}
+
+/**
+ * @param {string} value
+ * @returns {number}
+ */
+function convertPercentToNumber(value) {
+  value = value.replace(/%$/, '');
+  return parseFloat(value) / 100;
+}
+
+/**
+ * @param {string} value
+ * @returns {number}
+ */
+function convertHueAngleToNumber(value) {
+  if (value.endsWith('.')) {
+    return NaN
+  }
+
+  return parseFloat(value);
+}
+
+/**
+ * @param {string} value
+ * @returns {number}
+ */
+
+function convertAlphaToNumber(value) {
+  if (value.endsWith('%')) {
+    return convertPercentToNumber(value);
+  }
+
+  if (value.endsWith('.')) {
+    return NaN;
+  }
+
+  return parseFloat(value);
+}
+
+/**
+ * @param {number} value
+ * @returns {number}
+ */
+function convertNumberTo8Bit(value) {
+  return roundToPrecision(value * 255);
+}
+
+/**
+ * @param {string} value
+ * @returns {number}
+ */
+function convert8BitToNumber(value) {
+  return parseFloat(value) / 255;
+}
+
+/**
+ * @param {string} value
+ * @returns {object}
+ */
+function convertHexToRgb(value) {
+  value = value.replace(/^#/, '');
+  const channels = value.match(/.{2}/g)
+    .map(channel => {
+      return parseInt(channel, 16) / 255;
+    });
+
+  return {
+    r: channels[0],
+    g: channels[1],
+    b: channels[2],
+    a: channels[3]
+  }
+}
+
+/**
+ * @param {object} value
+ * @returns {string}
+ */
+function convertRgbToHex(value) {
+  let hexChannels = [];
+  for (const channel of Object.values(value)) {
+    const int = convertNumberTo8Bit(channel);
+    let hex = Math.round(int).toString(16);
+    hex = hex.length === 1 ? '0' + hex : hex;
+    hexChannels.push(hex);
+  }
+
+  if (hexChannels.every(c => c[0] === c[1])) {
+    hexChannels = hexChannels.map(c => c[0]);
+  }
+
+  return '#' + hexChannels.join('');
+}
+
+/**
+ * @param {string} value
+ * @returns {number}
+ */
+function convertHexToNumber(value) {
+  return roundToPrecision(parseInt(value, 16) / 255);
+}
+
+/**
+ * @param {number} value
+ * @returns {string}
+ */
+function convertNumberToHex(value) {
+  return Math.round(value * 255).toString(16);
+}
+
+
+
+/**
+ * Converts an HSL color object to an HSV color object.
+ *
+ * Source: https://en.m.wikipedia.org/wiki/HSL_and_HSV#HSL_to_HSV
+ *
+ * @param {object} hsl
+ * @returns {object}
+ */
+function convertHslToHsv(hsl) {
+  const v = hsl.l + hsl.s * Math.min(hsl.l, 1 - hsl.l);
+  const s = v === 0 ? 0 : 2 - 2 * hsl.l / v;
+
+  return {
+    h: hsl.h,
+    s,
+    v,
+    a: hsl.a
+  };
+}
+
+/**
+ * Converts an HSV color object to an HSL color object.
+ *
+ * Source: https://en.m.wikipedia.org/wiki/HSL_and_HSV#HSV_to_HSL
+ *
+ * @param {object} hsv
+ * @returns {object}
+ */
+function convertHsvToHsl(hsv) {
+  const l = hsv.v - hsv.v * hsv.s / 2;
+  const lMin = Math.min(l, 1 - l);
+  const s = lMin === 0 ? 0 : (hsv.v - l) / lMin;
+
+  return {
+    h: hsv.h,
+    s,
+    l,
+    a: hsv.a
+  };
+}
+
+/**
+ * @param {object} hwb
+ * @returns {object}
+ */
+function convertHwbToRgb(hwb) {
+  const hsv = convertHwbToHsv(hwb);
+  return convertHsvToRgb(hsv);
+}
+
+/**
+ * @param {object} rgb
+ * @returns {object}
+ */
+function convertRgbToHwb(rgb) {
+  const hsv = convertRgbToHsv(rgb);
+  return convertHsvToHwb(hsv);
+}
+
+/**
+ * @param {object} hwb
+ * @returns {object}
+ */
+function convertHwbToHsl(hwb) {
+  const hsv = convertHwbToHsv(hwb);
+  return convertHsvToHsl(hsv);
+
+}
+
+/**
+ * @param {object} hsl
+ * @returns {object}
+ */
+function convertHslToHwb(hsl) {
+  const hsv = convertHslToHsv(hsl);
+  return convertHsvToHwb(hsv);
+}
+
+/**
+ * @param {object} hsv
+ * @returns {object}
+ */
+function convertHsvToHwb(hsv) {
+  return {
+    h: hsv.h,
+    w: (1 - hsv.s) * hsv.v,
+    b: 1 - hsv.v,
+    a: hsv.a
+  };
+}
+
+/**
+ * @param {object} hwb
+ * @returns {object}
+ */
+function convertHwbToHsv(hwb) {
+  return {
+    h: hwb.h,
+    s: 1 - hwb.w / (1 - hwb.b),
+    v: 1 - hwb.b,
+    a: hwb.a
+  };
+}
+
+/**
+ * Source: https://en.m.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB
+ *
+ * @param {object} hsl
+ * @returns {object}
+ */
+function convertHslToRgb(hsl) {
+  const chroma = (1 - Math.abs(2 * hsl.l - 1)) * hsl.s;
+  const k = hsl.h / 60;
+  const x = chroma * (1 - Math.abs(k % 2 - 1));
+
+  let r_ = 0, g_ = 0, b_ = 0;
+  if (0 <= k && k <= 1) {
+    r_ = chroma;
+    g_ = x;
+  } else if (1 < k && k <= 2) {
+    r_ = x;
+    g_ = chroma;
+  } else if (2 < k && k <= 3) {
+    g_ = chroma;
+    b_ = x;
+  } else if (3 < k && k <= 4) {
+    g_ = x;
+    b_ = chroma;
+  } else if (4 < k && k <= 5) {
+    r_ = x;
+    b_ = chroma;
+  } else if (5 < k && k <= 6) {
+    r_ = chroma;
+    b_ = x;
+  }
+
+  const m = hsl.l - chroma / 2;
+  return {
+    r: r_ + m,
+    g: g_ + m,
+    b: b_ + m,
+    a: hsl.a
+  }
+}
+
+/**
+ * Source: https://en.m.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB
+ *
+ * @param {object} hsv
+ * @returns {object}
+ */
+function convertHsvToRgb(hsv) {
+  const chroma = hsv.v * hsv.s;
+  const k = hsv.h / 60;
+  const x = chroma * (1 - Math.abs(k % 2 - 1));
+
+  let r_ = 0, g_ = 0, b_ = 0;
+  if (0 <= k && k <= 1) {
+    r_ = chroma;
+    g_ = x;
+  } else if (1 < k && k <= 2) {
+    r_ = x;
+    g_ = chroma;
+  } else if (2 < k && k <= 3) {
+    g_ = chroma;
+    b_ = x;
+  } else if (3 < k && k <= 4) {
+    g_ = x;
+    b_ = chroma;
+  } else if (4 < k && k <= 5) {
+    r_ = x;
+    b_ = chroma;
+  } else if (5 < k && k <= 6) {
+    r_ = chroma;
+    b_ = x;
+  }
+
+  const m = hsv.v - chroma;
+  return {
+    r: r_ + m,
+    g: g_ + m,
+    b: b_ + m,
+    a: hsv.a
+  }
+}
+
+/**
+ * Source: https://en.m.wikipedia.org/wiki/HSL_and_HSV#RGB_to_HSL_and_HSV
+ *
+ * @param {object} rgb
+ * @returns {object}
+ */
+function convertRgbToHsl(rgb) {
+  const min = Math.min(rgb.r, Math.min(rgb.g, rgb.b));
+  const max = Math.max(rgb.r, Math.max(rgb.g, rgb.b));
+
+  let h;
+  if (max === min) {
+    h = 0;
+  } else if (max === rgb.r) {
+    h = 60 * (0 + (rgb.g - rgb.b) / (max - min));
+  } else if (max === rgb.g) {
+    h = 60 * (2 + (rgb.b - rgb.r) / (max - min));
+  } else if (max === rgb.b) {
+    h = 60 * (4 + (rgb.r - rgb.g) / (max - min));
+  }
+
+  if (h < 0) {
+    h += 360;
+  }
+
+  const l = (max + min) / 2;
+
+  let s;
+  if (max === 0 || min === 1) {
+    s = 0;
+  } else {
+    s = (max - l) / Math.min(l, 1 - l);
+  }
+
+  return {
+    h,
+    s,
+    l,
+    a: rgb.a
+  }
+}
+
+/**
+ * Source: https://en.m.wikipedia.org/wiki/HSL_and_HSV#RGB_to_HSL_and_HSV
+ *
+ * @param {object} rgb
+ * @returns {object}
+ */
+function convertRgbToHsv(rgb) {
+  const min = Math.min(rgb.r, Math.min(rgb.g, rgb.b));
+  const max = Math.max(rgb.r, Math.max(rgb.g, rgb.b));
+
+  let h;
+  if (max === min) {
+    h = 0;
+  } else if (max === rgb.r) {
+    h = 60 * (0 + (rgb.g - rgb.b) / (max - min));
+  } else if (max === rgb.g) {
+    h = 60 * (2 + (rgb.b - rgb.r) / (max - min));
+  } else if (max === rgb.b) {
+    h = 60 * (4 + (rgb.r - rgb.g) / (max - min));
+  }
+
+  if (h < 0) {
+    h += 360;
+  }
+
+  let s;
+  if (max === 0) {
+    s = 0;
+  } else {
+    s = (max - min) / max;
+  }
+
+  const v = max;
+
+  return {
+    h,
+    s,
+    v,
+    a: rgb.a
+  }
+}
+
+function convertHslToCssColor(colorProp, color, includeAlpha = true) {
+  const colorFunction = colorProp.colorModel + (includeAlpha ? 'a' : '');
+
+  const functionArgument = Object.entries(color)
+    .filter(([channel, _]) => includeAlpha || channel !== 'a')
+    .map(([channel, value]) => colorProp.inputs[channel].convertToCssValue(value))
+    .join(', ');
+
+  const cssColor = `${colorFunction}(${functionArgument})`;
+  return cssColor;
+}
+
+function convertHsvToCssColor(colorProp, color, includeAlpha = true) {
+  return convertHslToCssColor(colorProp, color, includeAlpha);
+}
+
+function convertHwbToCssColor(colorProp, color, includeAlpha = true) {
+  return convertHslToCssColor(colorProp, color, includeAlpha);
+}
+
+function convertRgbToCssColor(colorProp, color, includeAlpha = true) {
+  return convertHslToCssColor(colorProp, color, includeAlpha);
+}
+
+function convertHexToCssColor(colorProp, color, includeAlpha = true) {
+  const colorCopy = Object.assign({}, color);
+  if (includeAlpha === false) {
+    delete colorCopy.a;
+  }
+
+  return colorProp.inputs['hex'].convertToCssValue(colorCopy);
+}</script>
+</body>
+
+
+
+
+</html>
